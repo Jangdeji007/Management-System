@@ -1,0 +1,62 @@
+# Build output
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# NuGet
+*.nupkg
+**/packages/
+project.lock.json
+
+# Test and coverage
+TestResults/
+coverage*.json
+*.coverage
+*.coveragexml
+
+# Publish
+**/publish/
+**/app.publish/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/secrets.json
+*.pfx
+
+# Logs
+*.log
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.next/
+out/
+.turbo/
+.parcel-cache/
+*.tsbuildinfo
+.env.local
+.env.*.local
