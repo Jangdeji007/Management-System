@@ -1,5 +1,6 @@
 using ManagementSystem.Application;
 using ManagementSystem.Infrastructure;
+using ManagementSystem.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,22 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    try
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("DbInitializer");
+        await DbInitializer.InitializeAsync(db, logger);
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("DbInitializer");
+        logger.LogWarning(
+            ex,
+            "Database migrate/seed skipped. Set ConnectionStrings:DefaultConnection (User Secrets) and Azure SQL firewall.");
+    }
 }
 
 app.UseHttpsRedirection();

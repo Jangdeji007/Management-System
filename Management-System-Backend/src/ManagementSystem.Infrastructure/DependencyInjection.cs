@@ -1,3 +1,5 @@
+using ManagementSystem.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +11,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        _ = configuration;
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(connectionString));
+
         return services;
     }
 }

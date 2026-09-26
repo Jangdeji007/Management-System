@@ -2,10 +2,14 @@
 
 Monorepo for the Management System application: .NET backend (Clean Architecture) and a future frontend.
 
+**Implementation roadmap:** [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) (Team Task Management System — assignment requirements, architecture, phases, and deliverables).
+
 ## Repository layout
 
 ```text
 Management-System/
+├── docs/
+│   └── PROJECT_PLAN.md            # Full project plan (assessment)
 ├── Management-System-Backend/     # .NET 8 API (Clean Architecture)
 │   ├── ManagementSystem.sln
 │   └── src/
@@ -17,6 +21,8 @@ Management-System/
 ```
 
 ## Backend
+
+See **[Management-System-Backend/README.md](Management-System-Backend/README.md)** for **Azure SQL** connection (User Secrets), EF migrations, demo seed users, and health endpoints.
 
 ### Prerequisites
 
