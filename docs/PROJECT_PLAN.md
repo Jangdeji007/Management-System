@@ -34,7 +34,7 @@ Build a **role-based Task Management System** where organizations can:
 | Backend skeleton  | .NET 8, Clean Architecture (Domain, Application, Infrastructure, Api), Swagger in Development |
 | Domain / features | **Phase 0:** domain entities + EF schema; API features in Phase 1+ |
 | Database / EF Core| **Done (Phase 0):** EF Core SqlServer, migrations, seed on dev startup — **Azure SQL** `TaskManagementDb` on `sql-taskmgmt-karan` (South India) |
-| Auth (JWT + RBAC) | Not implemented yet (Phase 1) |
+| Auth (JWT + RBAC) | **Done (Phase 1):** login, register, JWT bearer, role policies, Swagger auth |
 | Frontend          | Placeholder only — assignment requires **React + Axios** |
 | Docker / CI/CD    | Not set up yet |
 
@@ -252,18 +252,18 @@ Trigger notifications in **Application layer** after successful save (domain eve
 
 ### Phase 1 — Auth & RBAC (2–3 days)
 
-- [x] User entity (persistence); [ ] registration/login API
-- [ ] JWT generation and validation middleware
-- [ ] Role policies on controllers
-- [ ] Swagger JWT configuration
+- [x] User entity (persistence); [x] registration/login API
+- [x] JWT generation and validation middleware
+- [x] Role policies on controllers
+- [x] Swagger JWT configuration
 
 **Exit criteria:** Login from Swagger/Postman; role-protected endpoint returns 403 for wrong role.
 
 ### Phase 2 — Teams & users (2 days)
 
-- [ ] Team CRUD (Admin)
-- [ ] Team membership (Admin/Manager rules)
-- [ ] List users for assignment dropdowns (scoped)
+- [x] Team CRUD (Admin)
+- [x] Team membership (Admin/Manager rules)
+- [x] List users for assignment dropdowns (scoped)
 
 ### Phase 3 — Tasks & comments (3–4 days)
 
