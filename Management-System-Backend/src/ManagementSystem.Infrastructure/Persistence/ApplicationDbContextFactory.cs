@@ -16,12 +16,15 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddJsonFile("appsettings.Local.json", optional: true)
             .AddUserSecrets("ManagementSystem.Api-7c4e9a2b-1f3d-4b8e-9c0a-2d5e6f708192")
             .AddEnvironmentVariables()
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(
+            configuration.GetConnectionString("DefaultConnection"),
+            sql => sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

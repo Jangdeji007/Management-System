@@ -5,19 +5,30 @@
 ## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- Azure SQL database (this project targets `TaskManagementDb` on server `sql-taskmgmt-karan.database.windows.net`)
+- Azure SQL: database **`sql-taskmgmt-karan`** on server **`rg-taskmanagement-prod.database.windows.net`**
 
-## Database connection (User Secrets)
+## Database connection (local)
 
 Do **not** commit passwords or production connection strings.
+
+### Option A — `appsettings.Local.json` (easy to edit)
+
+1. Copy [`src/ManagementSystem.Api/appsettings.Local.json.example`](src/ManagementSystem.Api/appsettings.Local.json.example) to `appsettings.Local.json` in the same folder.
+2. Replace `YOUR_PASSWORD` with your SQL login password.
+
+This file is gitignored (`**/appsettings.Local.json`).
+
+### Option B — User Secrets
 
 From this folder:
 
 ```powershell
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:sql-taskmgmt-karan.database.windows.net,1433;Initial Catalog=TaskManagementDb;Persist Security Info=False;User ID=sqladmin;Password=YOUR_PASSWORD;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" --project src/ManagementSystem.Api/ManagementSystem.Api.csproj
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:rg-taskmanagement-prod.database.windows.net,1433;Initial Catalog=sql-taskmgmt-karan;Persist Security Info=False;User ID=sqladmin;Password=YOUR_PASSWORD;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" --project src/ManagementSystem.Api/ManagementSystem.Api.csproj
 ```
 
-**Azure firewall:** On logical server `sql-taskmgmt-karan`, add your client IP and enable **Allow Azure services** for future App Service deployment.
+You can use **both**; `appsettings.Local.json` is loaded after default config and overrides User Secrets when keys conflict.
+
+**Azure firewall:** On logical server `rg-taskmanagement-prod`, add your **current client IP** (Azure Portal → SQL server → Networking → Firewall rules → **Add your client IP address**) and enable **Allow Azure services** for future App Service deployment. If `dotnet ef` or the API fails with **40615** (*IP is not allowed*), update this rule and wait up to 5 minutes, then retry.
 
 ## Build and run
 
@@ -35,6 +46,8 @@ In **Development**, the app applies pending migrations and seeds demo users on s
 ## EF Core migrations
 
 Tool manifest: [`.config/dotnet-tools.json`](.config/dotnet-tools.json)
+
+Stop any running API first (`Ctrl+C` on `dotnet run`) — otherwise `dotnet build` / `dotnet ef database update` may fail with **MSB3027** (DLL file locked by `ManagementSystem.Api`).
 
 ```powershell
 dotnet tool restore
