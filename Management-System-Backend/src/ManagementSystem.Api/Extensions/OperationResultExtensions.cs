@@ -13,7 +13,9 @@ public static class OperationResultExtensions
         return result.Failure switch
         {
             OperationFailureKind.NotFound => controller.NotFound(new { title = "The requested resource was not found." }),
-            OperationFailureKind.Forbidden => controller.Forbid(),
+            OperationFailureKind.Forbidden => controller.StatusCode(
+                StatusCodes.Status403Forbidden,
+                new { title = "You are not allowed to perform this action.", status = StatusCodes.Status403Forbidden }),
             OperationFailureKind.Conflict => controller.Conflict(new { title = "The operation conflicts with the current state." }),
             OperationFailureKind.InvalidOperation => controller.BadRequest(new { title = "The operation is not valid." }),
             _ => controller.BadRequest(new { title = "The request could not be completed." })

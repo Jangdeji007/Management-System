@@ -11,7 +11,11 @@
 
 Do **not** commit passwords or production connection strings.
 
-### `appsettings.Local.json` (recommended)
+Committed [`appsettings.json`](src/ManagementSystem.Api/appsettings.json) holds **JWT metadata only** (issuer, audience, expiration)—no database connection string and no signing key. You must provide `Jwt:Key` and connection strings locally (see below).
+
+**Database names:** LocalDB uses database **`ManagementSystemDb`**. Azure uses catalog **`sql-taskmgmt-karan`** on server `rg-taskmanagement-prod.database.windows.net` (see example connection string).
+
+### `appsettings.Local.json` (required for local run)
 
 1. Copy [`src/ManagementSystem.Api/appsettings.Local.json.example`](src/ManagementSystem.Api/appsettings.Local.json.example) to `appsettings.Local.json` in the same folder (gitignored).
 2. Set `Jwt:Key` to at least **32 characters**.
@@ -35,9 +39,13 @@ In **Development**, `dotnet run` applies migrations and seeds a full demo datase
 
 ### JWT signing key
 
-The API requires `Jwt:Key` (min 32 characters). Issuer, audience, and token lifetime are in [`appsettings.json`](src/ManagementSystem.Api/appsettings.json).
+The API requires `Jwt:Key` (min 32 characters) in `appsettings.Local.json` (or User Secrets). Issuer, audience, and token lifetime defaults are in [`appsettings.json`](src/ManagementSystem.Api/appsettings.json).
 
-Optional User Secrets for `Jwt:Key` only; `appsettings.Local.json` is loaded **after** User Secrets and wins on conflicts.
+`appsettings.Local.json` is loaded **after** User Secrets and wins on conflicts.
+
+### CORS (React frontend)
+
+In **Development**, allowed browser origins are configured in [`appsettings.Development.json`](src/ManagementSystem.Api/appsettings.Development.json) under `Cors:AllowedOrigins` (default includes `http://localhost:5173` for Vite and `http://localhost:5034` for the API). Adjust when your frontend dev server uses another port.
 
 **Azure firewall (when `ConnectionProfile` is `Azure`):** On logical server `rg-taskmanagement-prod`, add your **current client IP** (Azure Portal → SQL server → Networking → Firewall rules). Error **40615** = IP not allowed; **40613** = database unavailable/paused.
 
@@ -60,8 +68,11 @@ In **Development**, the app applies pending migrations and seeds demo users on s
 |--------|----------|--------|
 | POST | `/api/auth/login` | Returns JWT + user profile |
 | POST | `/api/auth/register` | Creates account with role **User** |
+| GET | `/api/auth/me` | Bearer required; returns current user profile |
 
-**Swagger:** `POST /api/auth/login` with a demo user → copy `accessToken` → **Authorize** with `Bearer {token}` for future protected APIs.
+**Swagger:** `POST /api/auth/login` with a demo user → copy `accessToken` → **Authorize** with `Bearer {token}` for protected APIs (including `GET /api/auth/me`).
+
+Forbidden role actions return **403** with a JSON body (`title`, `status`). Invalid or incomplete auth context returns **401** ProblemDetails via the global exception handler.
 
 ### Teams & users (Phase 2)
 

@@ -282,7 +282,7 @@ Trigger notifications in **Application layer** after successful save (domain eve
 - [ ] Vite + React + TypeScript in `Management-System-Frontend`
 - [ ] Axios client, auth context, protected routes
 - [ ] Dashboard, tasks, task detail, teams (role-gated)
-- [ ] CORS on API for dev origin
+- [x] CORS on API for dev origin
 
 ### Phase 6 — Quality & DevOps (3–4 days, overlaps possible)
 

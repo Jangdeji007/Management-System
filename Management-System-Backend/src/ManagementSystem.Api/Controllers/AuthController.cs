@@ -1,3 +1,5 @@
+using ManagementSystem.Api.Extensions;
+using ManagementSystem.Application.Authorization;
 using ManagementSystem.Application.Common;
 using ManagementSystem.Application.Models.RequestModel;
 using ManagementSystem.Application.Services.Auth;
@@ -36,5 +38,16 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Conflict(new { title = "An account with this email already exists." });
 
         return StatusCode(StatusCodes.Status201Created, result.Value);
+    }
+
+    [HttpGet("me")]
+    [Authorize(Policy = AuthorizationPolicies.Authenticated)]
+    public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
+    {
+        var result = await authService.GetCurrentUserAsync(User.GetUserId(), cancellationToken);
+        if (result.Failure == AuthFailureKind.UserNotFound)
+            return NotFound(new { title = "User not found." });
+
+        return Ok(result.Value);
     }
 }

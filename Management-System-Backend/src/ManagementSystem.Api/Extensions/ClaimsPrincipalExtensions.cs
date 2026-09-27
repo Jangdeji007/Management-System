@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using ManagementSystem.Api;
 using ManagementSystem.Domain.Enums;
 
 namespace ManagementSystem.Api.Extensions;
@@ -12,7 +13,7 @@ public static class ClaimsPrincipalExtensions
             ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (sub is null || !Guid.TryParse(sub, out var userId))
-            throw new InvalidOperationException("Authenticated user id claim is missing or invalid.");
+            throw new UnauthorizedUserException("Authenticated user id claim is missing or invalid.");
 
         return userId;
     }
@@ -21,7 +22,7 @@ public static class ClaimsPrincipalExtensions
     {
         var role = principal.FindFirstValue(ClaimTypes.Role);
         if (role is null || !Enum.TryParse<UserRole>(role, out var userRole))
-            throw new InvalidOperationException("Authenticated user role claim is missing or invalid.");
+            throw new UnauthorizedUserException("Authenticated user role claim is missing or invalid.");
 
         return userRole;
     }

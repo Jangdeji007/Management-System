@@ -11,10 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerWithJwt();
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddFrontendCors(builder.Configuration, builder.Environment);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddJsonAuthorizationResponses();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
@@ -38,6 +44,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseCors(CorsExtensions.FrontendPolicyName);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

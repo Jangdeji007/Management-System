@@ -48,6 +48,17 @@ public class AuthService(
         return AuthResult<AuthResponse>.Success(BuildAuthResponse(user));
     }
 
+    public async Task<AuthResult<UserProfileDto>> GetCurrentUserAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null)
+            return AuthResult<UserProfileDto>.Fail(AuthFailureKind.UserNotFound);
+
+        return AuthResult<UserProfileDto>.Success(MapProfile(user));
+    }
+
     private bool VerifyPassword(User user, string password)
     {
         var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
