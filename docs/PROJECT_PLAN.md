@@ -35,6 +35,7 @@ Build a **role-based Task Management System** where organizations can:
 | Domain / features | **Phase 0:** domain entities + EF schema; API features in Phase 1+ |
 | Database / EF Core| **Done (Phase 0):** EF Core SqlServer, migrations, seed on dev startup — **Azure SQL** `TaskManagementDb` on `sql-taskmgmt-karan` (South India) |
 | Auth (JWT + RBAC) | **Done (Phase 1):** login, register, JWT bearer, role policies, Swagger auth |
+| Tasks / comments / notifications / dashboard | **Done (Phases 3–4):** task CRUD, comments, in-app notifications API, dashboard summary |
 | Frontend          | Placeholder only — assignment requires **React + Axios** |
 | Docker / CI/CD    | Not set up yet |
 
@@ -267,14 +268,14 @@ Trigger notifications in **Application layer** after successful save (domain eve
 
 ### Phase 3 — Tasks & comments (3–4 days)
 
-- [ ] Task CRUD + status enum
-- [ ] Assignment rules by role
-- [ ] Comments API
-- [ ] Notification records on assign + status change
+- [x] Task CRUD + status enum
+- [x] Assignment rules by role
+- [x] Comments API
+- [x] Notification records on assign + status change
 
 ### Phase 4 — Dashboard API (1 day)
 
-- [ ] Aggregated counts and filtered task lists for dashboard
+- [x] Aggregated counts and filtered task lists for dashboard
 
 ### Phase 5 — React frontend (4–5 days)
 

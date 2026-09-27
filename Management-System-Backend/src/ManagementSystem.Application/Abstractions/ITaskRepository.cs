@@ -1,4 +1,5 @@
 using ManagementSystem.Application.Common;
+using ManagementSystem.Application.DTOs;
 using ManagementSystem.Domain.Entities;
 
 namespace ManagementSystem.Application.Abstractions;
@@ -6,6 +7,10 @@ namespace ManagementSystem.Application.Abstractions;
 public interface ITaskRepository
 {
     Task<IReadOnlyList<TaskItem>> ListAsync(
+        TaskQueryFilter filter,
+        CancellationToken cancellationToken = default);
+
+    Task<TaskStatusCountsDto> GetStatusCountsAsync(
         TaskQueryFilter filter,
         CancellationToken cancellationToken = default);
 

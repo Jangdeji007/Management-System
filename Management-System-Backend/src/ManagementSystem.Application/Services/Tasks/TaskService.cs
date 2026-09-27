@@ -2,6 +2,7 @@ using ManagementSystem.Application.Abstractions;
 using ManagementSystem.Application.Common;
 using ManagementSystem.Application.DTOs;
 using ManagementSystem.Application.Models.RequestModel;
+using ManagementSystem.Application.Services.Notifications;
 using ManagementSystem.Domain.Entities;
 using ManagementSystem.Domain.Enums;
 using DomainTaskStatus = ManagementSystem.Domain.Enums.TaskStatus;
@@ -12,7 +13,9 @@ public class TaskService(
     ITaskRepository taskRepository,
     ITeamRepository teamRepository,
     IUserRepository userRepository,
-    TaskAccessEvaluator taskAccess) : ITaskService
+    TaskAccessEvaluator taskAccess,
+    ITaskNotificationService taskNotificationService,
+    TaskQueryScopeBuilder scopeBuilder) : ITaskService
 {
     public async Task<OperationResult<IReadOnlyList<TaskListItemDto>>> ListTasksAsync(
         Guid callerId,
@@ -85,7 +88,7 @@ public class TaskService(
 
         await taskRepository.AddAsync(task, cancellationToken);
 
-        // TODO: Phase 3b — create Notification on task assignment
+        await taskNotificationService.NotifyAssignmentAsync(task, callerId, cancellationToken);
 
         var created = await taskRepository.GetByIdForReadAsync(task.Id, cancellationToken);
         return OperationResult<TaskDetailDto>.Success(MapDetail(created!));
@@ -134,9 +137,7 @@ public class TaskService(
         await taskRepository.UpdateAsync(task, cancellationToken);
 
         if (assigneeChanged)
-        {
-            // TODO: Phase 3b — create Notification on task assignment
-        }
+            await taskNotificationService.NotifyAssignmentAsync(task, callerId, cancellationToken);
 
         var updated = await taskRepository.GetByIdForReadAsync(taskId, cancellationToken);
         return OperationResult<TaskDetailDto>.Success(MapDetail(updated!));
@@ -163,9 +164,7 @@ public class TaskService(
         await taskRepository.UpdateAsync(task, cancellationToken);
 
         if (statusChanged)
-        {
-            // TODO: Phase 3b — create Notification on task status update
-        }
+            await taskNotificationService.NotifyStatusChangeAsync(task, request.Status, callerId, cancellationToken);
 
         var updated = await taskRepository.GetByIdForReadAsync(taskId, cancellationToken);
         return OperationResult<TaskDetailDto>.Success(MapDetail(updated!));
@@ -197,18 +196,8 @@ public class TaskService(
         ListTasksQueryRequest query,
         CancellationToken cancellationToken)
     {
-        TaskQueryFilter baseFilter = callerRole switch
-        {
-            UserRole.Admin => new TaskQueryFilter { ScopeAll = true },
-            UserRole.Manager => new TaskQueryFilter
-            {
-                ScopeTeamIds = await userRepository.GetTeamIdsForUserAsync(callerId, cancellationToken)
-            },
-            UserRole.User => new TaskQueryFilter { ScopeAssigneeId = callerId },
-            _ => null!
-        };
-
-        if (callerRole is not (UserRole.Admin or UserRole.Manager or UserRole.User))
+        var baseFilter = await scopeBuilder.BuildScopeAsync(callerId, callerRole, cancellationToken);
+        if (baseFilter is null)
             return null;
 
         return baseFilter with

@@ -87,12 +87,27 @@ In **Development**, the app applies pending migrations and seeds demo users on s
 
 Task detail (`GET /api/tasks/{id}`) includes a `comments` array (oldest first).
 
-### Task comments (Phase 3b)
+### Task comments
 
 | Method | Path | Roles | Notes |
 |--------|------|-------|--------|
 | GET | `/api/tasks/{id}/comments` | Authenticated | Same task visibility as task detail |
 | POST | `/api/tasks/{id}/comments` | Authenticated | Body: `{ "body": "..." }`; author is the signed-in user |
+
+Creating or reassigning a task notifies the assignee (unless they are the actor). Changing task status notifies the assignee and creator (excluding the actor).
+
+### Notifications (Phase 3b)
+
+| Method | Path | Roles | Notes |
+|--------|------|-------|--------|
+| GET | `/api/notifications` | Authenticated | Current user’s notifications, newest first; optional `?unreadOnly=true` |
+| PATCH | `/api/notifications/{id}/read` | Authenticated | Mark one notification read (403 if not owned) |
+
+### Dashboard (Phase 4)
+
+| Method | Path | Roles | Notes |
+|--------|------|-------|--------|
+| GET | `/api/dashboard/summary` | Authenticated | Task counts by status in role scope; optional filters: `priority`, `assigneeId`, `teamId`, `dueBefore`, `dueAfter` (status filter ignored so all three buckets are returned). Includes `unreadNotificationCount`. Task lists use `GET /api/tasks`. |
 
 ## EF Core migrations
 
