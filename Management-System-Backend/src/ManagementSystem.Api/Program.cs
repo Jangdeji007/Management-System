@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
         var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("DbInitializer");
         logger.LogWarning(
             ex,
-            "Database migrate/seed skipped. Set ConnectionStrings:DefaultConnection (User Secrets) and Azure SQL firewall.");
+            "Database migrate/seed skipped. Copy appsettings.Local.json.example, set Database:ConnectionProfile to Local and ConnectionStrings:Local (LocalDB), or Azure with firewall for remote.");
     }
 }
 

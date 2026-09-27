@@ -16,11 +16,10 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = ConnectionStringResolver.Resolve(configuration);
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString, sql =>
-                sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null)));
+            ConfigureSqlServer(options, connectionString, configuration));
 
         services.AddOptions<JwtSettings>()
             .Bind(configuration.GetSection(JwtSettings.SectionName))
@@ -30,8 +29,26 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ITaskCommentRepository, TaskCommentRepository>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
+    }
+
+    private static void ConfigureSqlServer(
+        DbContextOptionsBuilder options,
+        string connectionString,
+        IConfiguration configuration)
+    {
+        if (ConnectionStringResolver.IsAzureProfile(configuration))
+        {
+            options.UseSqlServer(connectionString, sql =>
+                sql.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
+        }
+        else
+        {
+            options.UseSqlServer(connectionString);
+        }
     }
 }

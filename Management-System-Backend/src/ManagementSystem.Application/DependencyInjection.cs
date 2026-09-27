@@ -1,4 +1,5 @@
 using ManagementSystem.Application.Services.Auth;
+using ManagementSystem.Application.Services.Tasks;
 using ManagementSystem.Application.Services.Teams;
 using ManagementSystem.Application.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,9 @@ public static class DependencyInjection
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITeamService, TeamService>();
+        services.AddScoped<TaskAccessEvaluator>();
+        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<ITaskCommentService, TaskCommentService>();
         services.AddScoped<IUserQueryService, UserQueryService>();
         return services;
     }

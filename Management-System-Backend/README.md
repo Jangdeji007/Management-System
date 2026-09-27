@@ -11,34 +11,35 @@
 
 Do **not** commit passwords or production connection strings.
 
-### Option A — `appsettings.Local.json` (easy to edit)
+### `appsettings.Local.json` (recommended)
 
-1. Copy [`src/ManagementSystem.Api/appsettings.Local.json.example`](src/ManagementSystem.Api/appsettings.Local.json.example) to `appsettings.Local.json` in the same folder.
-2. Replace `YOUR_PASSWORD` with your SQL login password and set `Jwt:Key` to a secret of **at least 32 characters** (do not commit real keys).
+1. Copy [`src/ManagementSystem.Api/appsettings.Local.json.example`](src/ManagementSystem.Api/appsettings.Local.json.example) to `appsettings.Local.json` in the same folder (gitignored).
+2. Set `Jwt:Key` to at least **32 characters**.
+3. Keep both connection strings in the file; switch with one setting:
 
-This file is gitignored (`**/appsettings.Local.json`).
+| `Database:ConnectionProfile` | Uses |
+|------------------------------|------|
+| **`Local`** (default) | `ConnectionStrings:Local` — LocalDB `(localdb)\mssqllocaldb`, database **`ManagementSystemDb`** |
+| **`Azure`** | `ConnectionStrings:Azure` — replace `YOUR_PASSWORD`; requires Azure SQL firewall |
+
+**Local first run** (API stopped):
+
+```powershell
+dotnet tool restore
+dotnet ef database update --project src/ManagementSystem.Infrastructure --startup-project src/ManagementSystem.Api
+```
+
+In **Development**, `dotnet run` applies migrations and seeds a full demo dataset when there are fewer than **20 teams** or **20 tasks** (28 users, 20 teams, 25+ rows in team members / tasks / comments / notifications). Core logins: `admin@demo.com` / `Admin@123`, `manager@demo.com` / `Manager@123`, `user@demo.com` / `User@123`; extra users use `User@123` or `Manager@123`.
+
+**SSMS:** server `(localdb)\MSSQLLocalDB` → database `ManagementSystemDb` (created by migration).
 
 ### JWT signing key
 
 The API requires `Jwt:Key` (min 32 characters). Issuer, audience, and token lifetime are in [`appsettings.json`](src/ManagementSystem.Api/appsettings.json).
 
-**User Secrets** (from this folder):
+Optional User Secrets for `Jwt:Key` only; `appsettings.Local.json` is loaded **after** User Secrets and wins on conflicts.
 
-```powershell
-dotnet user-secrets set "Jwt:Key" "YOUR_LOCAL_JWT_SIGNING_KEY_AT_LEAST_32_CHARS" --project src/ManagementSystem.Api/ManagementSystem.Api.csproj
-```
-
-### Option B — User Secrets
-
-From this folder:
-
-```powershell
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:rg-taskmanagement-prod.database.windows.net,1433;Initial Catalog=sql-taskmgmt-karan;Persist Security Info=False;User ID=sqladmin;Password=YOUR_PASSWORD;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" --project src/ManagementSystem.Api/ManagementSystem.Api.csproj
-```
-
-You can use **both**; `appsettings.Local.json` is loaded after default config and overrides User Secrets when keys conflict.
-
-**Azure firewall:** On logical server `rg-taskmanagement-prod`, add your **current client IP** (Azure Portal → SQL server → Networking → Firewall rules → **Add your client IP address**) and enable **Allow Azure services** for future App Service deployment. If `dotnet ef` or the API fails with **40615** (*IP is not allowed*), update this rule and wait up to 5 minutes, then retry.
+**Azure firewall (when `ConnectionProfile` is `Azure`):** On logical server `rg-taskmanagement-prod`, add your **current client IP** (Azure Portal → SQL server → Networking → Firewall rules). Error **40615** = IP not allowed; **40613** = database unavailable/paused.
 
 ## Build and run
 
@@ -72,6 +73,26 @@ In **Development**, the app applies pending migrations and seeds demo users on s
 | POST | `/api/teams/{id}/members` | Admin, Manager | Body: `{ "userId": "..." }`; Manager only on their teams |
 | DELETE | `/api/teams/{id}/members/{userId}` | Admin, Manager | Same scope as add member |
 | GET | `/api/users` | Admin, Manager | Scoped user list for assignment dropdowns; optional `?teamId=` |
+
+### Tasks
+
+| Method | Path | Roles | Notes |
+|--------|------|-------|-------|
+| GET | `/api/tasks` | Authenticated | List scoped by role; filters bind from query (`ListTasksQueryRequest`: `status`, `priority`, `assigneeId`, `teamId`, `dueBefore`, `dueAfter`) |
+| GET | `/api/tasks/{id}` | Authenticated | Task detail |
+| POST | `/api/tasks` | Admin, Manager | Create; Manager requires `teamId` and team membership |
+| PUT | `/api/tasks/{id}` | Admin, Manager | Update fields / assignee |
+| PATCH | `/api/tasks/{id}/status` | Authenticated | Status update; User only on own assignments |
+| DELETE | `/api/tasks/{id}` | Admin, Manager | Delete task |
+
+Task detail (`GET /api/tasks/{id}`) includes a `comments` array (oldest first).
+
+### Task comments (Phase 3b)
+
+| Method | Path | Roles | Notes |
+|--------|------|-------|--------|
+| GET | `/api/tasks/{id}/comments` | Authenticated | Same task visibility as task detail |
+| POST | `/api/tasks/{id}/comments` | Authenticated | Body: `{ "body": "..." }`; author is the signed-in user |
 
 ## EF Core migrations
 
