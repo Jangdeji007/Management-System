@@ -36,7 +36,7 @@ Build a **role-based Task Management System** where organizations can:
 | Database / EF Core| **Done (Phase 0):** EF Core SqlServer, migrations, seed on dev startup — **Azure SQL** `TaskManagementDb` on `sql-taskmgmt-karan` (South India) |
 | Auth (JWT + RBAC) | **Done (Phase 1):** login, register, JWT bearer, role policies, Swagger auth |
 | Tasks / comments / notifications / dashboard | **Done (Phases 3–4):** task CRUD, comments, in-app notifications API, dashboard summary |
-| Frontend          | Placeholder only — assignment requires **React + Axios** |
+| Frontend          | **In progress (Phase 5):** React + Vite + Axios SPA in `Management-System-Frontend` |
 | Docker / CI/CD    | Not set up yet |
 
 **Strategic choice:** **.NET 8 + EF Core + Azure SQL Server**; **React (Vite) + Axios** for frontend. Connection string via User Secrets locally and App Service settings in production.
@@ -279,9 +279,9 @@ Trigger notifications in **Application layer** after successful save (domain eve
 
 ### Phase 5 — React frontend (4–5 days)
 
-- [ ] Vite + React + TypeScript in `Management-System-Frontend`
-- [ ] Axios client, auth context, protected routes
-- [ ] Dashboard, tasks, task detail, teams (role-gated)
+- [x] Vite + React + TypeScript in `Management-System-Frontend`
+- [x] Axios client, auth context, protected routes
+- [x] Dashboard, tasks, task detail, teams (role-gated)
 - [x] CORS on API for dev origin
 
 ### Phase 6 — Quality & DevOps (3–4 days, overlaps possible)

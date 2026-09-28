@@ -1,23 +1,67 @@
-# Management System — Frontend
+# Management System — Frontend (TaskFlow)
 
-Placeholder for the Management System user interface.
+React + TypeScript + Vite SPA for the Team Task Management System. Uses **Axios** to call the .NET API.
 
-## Status
+UI/UX plan: [Team_Task_Management_System_UI_Project_Plan.md](./Team_Task_Management_System_UI_Project_Plan.md)
 
-The frontend app is not scaffolded yet. Choose a stack (for example React, Vue, or Angular) when you are ready to implement the UI.
+## Prerequisites
 
-## Backend API
+- [Node.js](https://nodejs.org/) 20+ (22 recommended)
+- Backend API running locally (see [Management-System-Backend/README.md](../Management-System-Backend/README.md))
 
-The API lives in the sibling folder `Management-System-Backend`:
+## Setup
 
-- Project: `ManagementSystem.Api`
-- Local Swagger (Development): `http://localhost:5034/swagger`
-- HTTPS profile: `https://localhost:7047/swagger`
+```powershell
+cd Management-System-Frontend
+npm install
+```
 
-Configure the frontend HTTP client to call the API base URL that matches your launch profile and CORS settings on the backend.
+Copy environment variables if needed:
 
-## Next steps
+```powershell
+copy .env.example .env.development
+```
 
-1. Initialize the frontend toolchain in this folder (for example Vite + React + TypeScript).
-2. Add environment variables for the API base URL (for example `.env.development`).
-3. Enable CORS on `ManagementSystem.Api` for the frontend origin when you start integration.
+Default API URL: `http://localhost:5034` (matches the backend **http** launch profile).
+
+## Run
+
+```powershell
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
+
+In another terminal, start the API:
+
+```powershell
+cd Management-System-Backend
+dotnet run --project src/ManagementSystem.Api/ManagementSystem.Api.csproj
+```
+
+## Demo accounts
+
+| Role    | Email            | Password     |
+|---------|------------------|--------------|
+| Admin   | admin@demo.com   | Admin@123    |
+| Manager | manager@demo.com | Manager@123  |
+| User    | user@demo.com    | User@123     |
+
+## Features
+
+- JWT login and registration with protected routes
+- Role-based top navigation (Admin / Manager / User)
+- Dashboard: welcome, stat cards, status chart, recent tasks, upcoming deadlines, filters
+- Tasks: search (client-side), API filters, table/cards, create-task modal, detail, status, comments
+- Teams: card list, team detail with members and team tasks
+- Admin users list (read-only)
+- Notifications bell + full notifications page
+- Settings: read-only profile
+- Toasts (Sonner), Lucide icons, Inter font
+
+## Build
+
+```powershell
+npm run build
+npm run preview
+```

@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+body {
+  @apply min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-900 antialiased;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+/* Readable inputs on phones (avoids iOS zoom on focus) + comfortable field height */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  @apply min-h-[44px] text-base sm:min-h-[2.5rem] sm:text-sm;
+}
+
+@layer utilities {
+  .page-container {
+    @apply mx-auto w-full max-w-6xl px-3 py-4 sm:px-4 sm:py-8;
+  }
+
+  .page-heading {
+    @apply text-xl font-bold text-slate-900 sm:text-2xl;
+  }
+
+  .card-surface {
+    @apply rounded-xl border border-slate-200 bg-white p-4 sm:p-6;
+  }
+}

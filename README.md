@@ -17,7 +17,7 @@ Management-System/
 │       ├── ManagementSystem.Application/
 │       ├── ManagementSystem.Infrastructure/
 │       └── ManagementSystem.Api/
-└── Management-System-Frontend/    # UI (placeholder — see folder README)
+└── Management-System-Frontend/    # React + Vite SPA (see folder README)
 ```
 
 ## Backend
@@ -43,3 +43,11 @@ In Visual Studio, open `Management-System-Backend/ManagementSystem.sln` and set 
 ## Frontend
 
 See [Management-System-Frontend/README.md](Management-System-Frontend/README.md).
+
+```powershell
+cd Management-System-Frontend
+npm install
+npm run dev
+```
+
+App: `http://localhost:5173` (requires API on `http://localhost:5034`).
