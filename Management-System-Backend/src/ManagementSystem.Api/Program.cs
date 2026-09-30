@@ -24,26 +24,30 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
     try
     {
         await using var scope = app.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
             .CreateLogger("DbInitializer");
+
         await DbInitializer.InitializeAsync(db, logger);
     }
     catch (Exception ex)
     {
-        var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("DbInitializer");
+        var logger = app.Services
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("DbInitializer");
+
         logger.LogWarning(
             ex,
-            "Database migrate/seed skipped. Copy appsettings.Local.json.example, set Database:ConnectionProfile to Local and ConnectionStrings:Local (LocalDB), or Azure with firewall for remote.");
+            "Database migrate/seed skipped.");
     }
 }
 
+// Swagger available in Azure also
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors(CorsExtensions.FrontendPolicyName);
 app.UseHttpsRedirection();
 
