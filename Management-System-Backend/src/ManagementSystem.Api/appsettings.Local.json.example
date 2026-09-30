@@ -1,6 +1,6 @@
 {
   "Database": {
-    "ConnectionProfile": "Local"
+    "ConnectionProfile": "Azure"
   },
   "ConnectionStrings": {
     "Local": "Server=(localdb)\\mssqllocaldb;Database=ManagementSystemDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;",
